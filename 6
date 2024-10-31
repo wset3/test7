@@ -1,9 +1,3 @@
--- Ensure HTTP requests are enabled
-game:GetService("HttpService").HttpEnabled = true
-
--- Configurable SolaraMode
-getgenv().SolaraMode = true  -- Set this to true or false as needed
-
 -- Check if AutoMenu is enabled
 if getgenv().AutoMenu then    
     -- Step 1: Execute various server calls
@@ -58,19 +52,14 @@ if getgenv().AutoMenu then
     
     wait(0.9)
     
-    -- Step 2: Load and run the appropriate external script based on SolaraMode
+    -- Step 2: Load and run the external script
     print("Executing The Script...")
     
     local version = os.time()  -- Prevent caching
     local success, err = pcall(function()
-        if getgenv().SolaraMode then
-            -- Current loadstring
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/hen56s2/Holder/refs/heads/main/Pop" .. version))()
-        else
-            -- Alternative loadstring (you can replace this URL with your own)
-            loadstring(game:HttpGet("https://your_alternative_script_url"))()
-        end
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/hen56s2/Holder/refs/heads/main/Pop" .. version))()
     end)
+
     -- Step 3: Check if the loadstring was successful
     if not success then
         print("Error loading script: ", err)
@@ -78,5 +67,5 @@ if getgenv().AutoMenu then
         print("Script loaded successfully.")
     end
 else
-    print("Macro Successfully Saved and Load")
+    print("Macro Succesfully Saved and Load")
 end
