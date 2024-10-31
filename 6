@@ -39,7 +39,7 @@ local function getRecommendedDungeon(level)
     return nextDungeon and nextDungeon.name, nextDungeon and nextDungeon.difficulty
 end
 
--- Check if AutoMenu is enabled
+-- AutoMenu Execution
 if getgenv().AutoMenu then
     -- Step 1: Execute various server calls
     local args = {
@@ -78,12 +78,12 @@ if getgenv().AutoMenu then
     game:GetService("ReplicatedStorage").dataRemoteEvent:FireServer(unpack(args))
     
     wait(0.9)
-    print("Script execution complete.")
+    print("AutoMenu execution complete.")
 else
     print("Macro Successfully Saved and Loaded")
 end
 
--- Display level and check for recommended dungeon if AutoMakeDungeon is enabled
+-- AutoMakeDungeon Execution
 if getgenv().AutoMakeDungeon then
     if head then
         local playerNameplate = head:FindFirstChild("playerNameplate")
